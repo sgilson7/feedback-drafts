@@ -14,6 +14,15 @@ One row per assumption, surprise or open item. **Kind** is *divergence* (what wa
 | 6 | finding | Breaking a rule and running `cargo test` shows every test that watches it. | `cargo test` stops after the first test binary with a failure, so `tests/hand_computed.rs` never ran while a unit test was failing. | Reran every break with `--no-fail-fast`; the record below comes from that run. | done |
 | 7 | finding | Every line in `Session::apply` was covered by a test. | Removing the `self.check()?` at the top of `apply` (break D45) failed no test: only `check()` itself was tested. | Added `apply_refuses_a_session_that_does_not_fit`; it fails under D45. | done |
 | 8 | finding | Every branch in the draft has an observable effect. | Two do not: the early `return None` in `draft()` when criteria are missing (the loop returns `None` anyway) and the empty-comment branch (the later trim gives the same text). They are kept because they state the rule plainly; a mutation audit will report them as unkillable. | Nothing. | done |
+| 9 | divergence | The core's `+ 1` on an index in an error message was harmless. | `api::tests::no_input_makes_any_function_panic` failed: `crates/core/src/rubric.rs:286` "attempt to add with overflow" for `criterion: 18446744073709551615`. Expected an `{"error": ...}`; got a panic. | Fixed in the core: `saturating_add(1)` in the three index messages (`rubric.rs`). The page was not touched. | done |
+| 10 | divergence | `page.wait_for_function("...")` could wait on page state in the browser check. | Playwright evaluates the string with `eval`, which the page's CSP (`script-src 'self' 'wasm-unsafe-eval'`) blocks: `EvalError ... 'unsafe-eval' is not an allowed source`. | `interactions.py` waits with locators (`#copy-status:not(:empty)`, `wait_for(state="hidden")`) instead. The CSP was not loosened. | done |
+| 11 | finding | Browser form history or field restoration could keep a student's name between visits. | Inputs carry `autocomplete="off"` and are not in a form; the page uses no storage API. Whether a given browser's session restore brings back typed text after a crash is not tested. | Worklist row 14. | done |
+| 12 | finding | The strings file, the sample rubric and the template's placeholder tests in `page.rs`. | The template's `a_complete_file_is_accepted` and `an_empty_intro_is_rejected_by_name` tested the two-field placeholder; they were replaced by tests on the real strings file (`the_shipped_file_is_accepted`, `an_empty_banner_is_rejected_by_name`, `a_missing_key_is_rejected`). The boundary tests are unchanged. | `page.rs` | done |
+| 13 | worklist | The sample rubric (`data/sample-rubric.json`) was written by the agent. | Its wording has not been checked by a teacher. The page shows a banner while it is loaded. | Teacher to check or replace it. | person |
+| 14 | worklist | Nothing is kept between visits. | So a rubric edited in the page is lost when the page is closed unless the teacher presses "Save rubric". The page does not warn before closing. A warning (`beforeunload`) stores nothing, but it was not asked for, so it is not added. | Teacher to decide whether a close warning is wanted. | person |
+| 15 | finding | The reopen checks in `interactions.py` waited for the banner to disappear. | Under break W1 (banner never shown) the wait returned at once, before the file had been read (`file.text()` is asynchronous), and "opening a file clears the levels" failed for the wrong reason. In the unbroken run the check passed only because the banner happened to be the signal. | The check now marks the editor before opening and waits for the rebuilt editor. Rerun of W1 fails only the banner check. | done |
+| 16 | finding | Break X3 (core keeps the missing message when every criterion has a level) would fail "the missing line is gone". | It did not: the page hides the missing line whenever the view has a draft, so the stale message never shows. The page draws from `view.draft`, a value the core decides, so this is drawing and not a copy of a rule. | The check was watched failing with X3 plus the page showing the line (X3b). | done |
+| 17 | finding | Breaks that make Playwright time out (W5, W16, the first X7) stop the run, so later checks are not seen. | A check is only "watched failing" when its own line says FAIL. | Reran those cases with breaks that fail without a time-out, and changed the "choice labels drop the points" check to count the matching label before reading it. | done |
 
 ## Watched failing (rule f)
 
@@ -88,3 +97,53 @@ The first run stopped at the first failing test binary, so the hand-computed tes
 | D36 start ignores the sample flag | `the_sample_is_four_criteria_by_four_levels_worth_one_to_four` |
 | D37 saved file without final newline | `the_sample_saved_is_the_sample_file_byte_for_byte` |
 | D38, D39, D41, D42, D43, D44 an edit ignored (show points, opening, note, points, remove, title) | each fails at least one test; remove fails `removing_down_to_one_criterion_and_then_the_last_is_refused` |
+
+### `crates/core/src/api.rs` (7 tests) and `crates/core/src/page.rs` (6 tests), step 4
+
+| Break | Tests that failed | First message |
+| --- | --- | --- |
+| A1 load drops the error message | `load_wraps_failure_in_error` | left: `{"error":""}` |
+| A2 start not marked sample | `start_gives_state_and_view_with_the_sample_flag` | left: `Bool(false)` |
+| A3 api skips the session check | `a_state_whose_choices_do_not_fit_the_rubric_is_refused` | `assertion failed: rubric_file(...).starts_with("{\"error\"")` |
+| A4 action-error wording | `errors_come_back_as_messages` | `starts_with("The page sent an action the tool does not know (")` failed |
+| A5, A6 file names fixed or empty | `the_rubric_file_and_the_draft_file_name` | left: `String("x.json")`; left: `{"ok":""}` |
+| A7 act returns the old session | `act_chooses_and_returns_the_next_state`, `the_rubric_file_and_the_draft_file_name` | left: `Null` |
+| A8 `criterion + 1` restored | `no_input_makes_any_function_panic` | `rubric.rs:292:17: attempt to add with overflow` (the real failure of row 9) |
+| P1 blank strings allowed | `an_empty_title_is_rejected_by_name`, `an_empty_banner_is_rejected_by_name` | `unwrap_err()` on `Ok` |
+| P2 unknown strings allowed | `an_unknown_field_is_rejected` | `matches!(..., Err(StringsError::NotJson(_)))` failed |
+| P3 banner key renamed | `the_shipped_file_is_accepted` and 3 others | `unknown field \`sample_banner\`` |
+| P4 `copy` optional | `a_missing_key_is_rejected` | `Empty("copy")` |
+| P5 not-JSON reported as empty | `text_that_is_not_json_is_rejected`, `an_unknown_field_is_rejected`, `load_wraps_failure_in_error` | `left: "{\"error\":\"The strings file has an empty ..."` |
+
+### `tests/browser/interactions.py` (52 checks), step 5
+
+Each break was built with `scripts/build.sh` and checked in Chromium (`BUILDER_IDLE=0`). Every interaction check printed FAIL under at least one break.
+
+| Break | Checks that failed |
+| --- | --- |
+| W1 view never marks the sample | the sample banner shows at start |
+| X1 banner drawn from the intro string (page) | the banner says the rubric is sample content |
+| W2 missing-message wording (core) | all four missing at start; Writing missing; Criterion 5 missing; opening clears the levels; Next student clears every level; the one criterion left is Writing |
+| W3 one newline between paragraphs (core) | the draft matches the hand-written text, and 7 other draft comparisons |
+| X2 never a draft (core) | the draft appears once every criterion has a level, and 6 draft comparisons |
+| X3b missing message kept and shown | the missing line is gone once the draft appears |
+| W4 comment edit ignored (core) | editing the comment changes the draft; saved rubric has the edited comment; reopened rubric has it; Next student keeps the rubric; 6 more |
+| W5 show-points edit ignored (core) | Playwright `uncheck` timed out (row 17) |
+| X7 choice labels always show points (core) | choice labels drop the points too |
+| W6 refused typed points stored as 0 (core) | points of 2.5 are refused with a message |
+| W15 title from intro, message never cleared (page) | title drawn; no error at start; valid points clear the message; the saved file opens without an error |
+| X4 add does not rebuild (page) | five in the editor; five in the choices |
+| X8 added criterion has blank labels (core) | the new criterion copies the level labels |
+| W7 added criterion copies comments, points 0 (core) | copies the points; comments are empty |
+| W8 remove ignored (core) | removing the new criterion leaves four |
+| W9 copy status `?` (page) | Copy reports what happened |
+| W10 file names fixed (core) | draft file named after the student; rubric file named after its title |
+| W17 saved draft is the note (page) | the saved draft is the text in the box |
+| X5 saved rubric gains a criterion (core) | the saved rubric has four criteria; the refused file leaves the rubric; 5 more |
+| W11 open keeps sample and choices, clears the name (core) | banner gone after opening; opening clears the levels; keeps the student name; reopened rubric gives the same draft |
+| W18 missing-field wording (core) | a file with a missing field is refused with a message |
+| X9 an error drops the last editor fieldset (page) | the refused file leaves the rubric as it was |
+| W12 Next student keeps everything (core) | clears the name; the note; every level; no level selected; no draft after Next student |
+| W14 draft area always shown (page) | no draft before any level; while a criterion is missing; while the new criterion has none; after Next student |
+| X6 removing criterion 1 ignored (core) | three removed leaves one; the last Remove button is disabled; the one left is Writing |
+| W13 last criterion removable (core) | the last criterion's Remove button is disabled |

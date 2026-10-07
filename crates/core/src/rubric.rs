@@ -240,14 +240,18 @@ impl Rubric {
     pub fn criterion_mut(&mut self, criterion: usize) -> Result<&mut Criterion, String> {
         self.criteria
             .get_mut(criterion)
-            .ok_or_else(|| format!("There is no criterion {}.", criterion + 1))
+            .ok_or_else(|| format!("There is no criterion {}.", criterion.saturating_add(1)))
     }
 
     pub fn level_mut(&mut self, criterion: usize, level: usize) -> Result<&mut Level, String> {
         let c = self.criterion_mut(criterion)?;
-        c.levels
-            .get_mut(level)
-            .ok_or_else(|| format!("Criterion {} has no level {}.", criterion + 1, level + 1))
+        c.levels.get_mut(level).ok_or_else(|| {
+            format!(
+                "Criterion {} has no level {}.",
+                criterion.saturating_add(1),
+                level.saturating_add(1)
+            )
+        })
     }
 
     pub fn set_points(&mut self, criterion: usize, level: usize, text: &str) -> Result<(), String> {
@@ -283,7 +287,10 @@ impl Rubric {
     /// Removes a criterion, but never the last one.
     pub fn remove_criterion(&mut self, criterion: usize) -> Result<(), String> {
         if criterion >= self.criteria.len() {
-            return Err(format!("There is no criterion {}.", criterion + 1));
+            return Err(format!(
+                "There is no criterion {}.",
+                criterion.saturating_add(1)
+            ));
         }
         if self.criteria.len() == 1 {
             return Err(
