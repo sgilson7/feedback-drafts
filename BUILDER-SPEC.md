@@ -48,4 +48,4 @@ These stay with the person and go in `BRIEF.md` or `PLAN.md`:
 
 | Default | Changed to | Reason | Recorded in |
 | --- | --- | --- | --- |
-| | | | |
+| (none changed) | Added, not changed: `crates/core/tests/no_storage.rs` and a browser check that the page stores nothing | The brief forbids browser storage; the template did not check for it | `SECOND-ORDER.md` row 18 |
