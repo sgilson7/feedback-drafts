@@ -200,3 +200,10 @@ def run(page, check, engine):
     check(page.locator("#criteria fieldset").count() == 1, "three criteria removed leaves one")
     check(editor(page, 0).locator("button.remove").is_disabled(), "the last criterion's Remove button is disabled")
     check(page.inner_text("#missing") == "Choose a level for: Writing.", "the one criterion left is Writing")
+
+    # Nothing was stored: no web storage, no cookie, no IndexedDB database.
+    stored = page.evaluate(
+        "async () => [localStorage.length, sessionStorage.length, document.cookie,"
+        " indexedDB.databases ? (await indexedDB.databases()).length : 0]"
+    )
+    check(stored == [0, 0, "", 0], f"the page stored nothing in the browser {stored}")

@@ -23,6 +23,7 @@ One row per assumption, surprise or open item. **Kind** is *divergence* (what wa
 | 15 | finding | The reopen checks in `interactions.py` waited for the banner to disappear. | Under break W1 (banner never shown) the wait returned at once, before the file had been read (`file.text()` is asynchronous), and "opening a file clears the levels" failed for the wrong reason. In the unbroken run the check passed only because the banner happened to be the signal. | The check now marks the editor before opening and waits for the rebuilt editor. Rerun of W1 fails only the banner check. | done |
 | 16 | finding | Break X3 (core keeps the missing message when every criterion has a level) would fail "the missing line is gone". | It did not: the page hides the missing line whenever the view has a draft, so the stale message never shows. The page draws from `view.draft`, a value the core decides, so this is drawing and not a copy of a rule. | The check was watched failing with X3 plus the page showing the line (X3b). | done |
 | 17 | finding | Breaks that make Playwright time out (W5, W16, the first X7) stop the run, so later checks are not seen. | A check is only "watched failing" when its own line says FAIL. | Reran those cases with breaks that fail without a time-out, and changed the "choice labels drop the points" check to count the matching label before reading it. | done |
+| 18 | finding | The template checks the page for network APIs but not for storage. | The brief forbids browser storage, and nothing in the template would notice it. | Added `crates/core/tests/no_storage.rs` (the page's files name no storage API) and a final browser check that web storage, cookies and IndexedDB are empty. The template's boundary tests are unchanged. | done |
 
 ## Watched failing (rule f)
 
@@ -115,7 +116,7 @@ The first run stopped at the first failing test binary, so the hand-computed tes
 | P4 `copy` optional | `a_missing_key_is_rejected` | `Empty("copy")` |
 | P5 not-JSON reported as empty | `text_that_is_not_json_is_rejected`, `an_unknown_field_is_rejected`, `load_wraps_failure_in_error` | `left: "{\"error\":\"The strings file has an empty ..."` |
 
-### `tests/browser/interactions.py` (52 checks), step 5
+### `tests/browser/interactions.py` (50 checks per engine), step 5
 
 Each break was built with `scripts/build.sh` and checked in Chromium (`BUILDER_IDLE=0`). Every interaction check printed FAIL under at least one break.
 
@@ -147,3 +148,10 @@ Each break was built with `scripts/build.sh` and checked in Chromium (`BUILDER_I
 | W14 draft area always shown (page) | no draft before any level; while a criterion is missing; while the new criterion has none; after Next student |
 | X6 removing criterion 1 ignored (core) | three removed leaves one; the last Remove button is disabled; the one left is Writing |
 | W13 last criterion removable (core) | the last criterion's Remove button is disabled |
+
+### No browser storage, step 6
+
+| Break | Checks that failed |
+| --- | --- |
+| page calls `sessionStorage.setItem("seen", "yes")` at start | `no_storage::the_page_names_no_browser_storage` ("browser storage in the page: .../web/app.js: sessionStorage"); browser check "the page stored nothing in the browser [0, 1, '', 0]" in Chromium, Firefox and WebKit |
+| `"indexedDB"` dropped from the scanner's list | `no_storage::the_scanner_sees_storage` (left: `[]`) |
