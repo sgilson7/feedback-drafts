@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Reference default. connect-src 'self' keeps fetches on this origin;
+       'wasm-unsafe-eval' lets the page compile its own WebAssembly module;
+       form-action 'none' blocks form posts. A meta policy cannot stop data
+       leaving by navigation, so the browser check still watches requests. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Feedback drafts</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-ready="false">
+  <main>
+    <header>
+      <h1 id="title"></h1>
+      <p id="intro" data-text="intro"></p>
+      <p id="privacy" class="hint" data-text="privacy"></p>
+    </header>
+
+    <p id="sample-banner" class="banner" data-text="sample_banner" hidden></p>
+    <p id="message" role="alert"></p>
+
+    <div class="columns">
+      <section id="student" aria-labelledby="student-heading">
+        <h2 id="student-heading" data-text="student_heading"></h2>
+        <label class="field">
+          <span data-text="student_name"></span>
+          <input id="student-name" type="text" autocomplete="off" spellcheck="false">
+        </label>
+
+        <h3 data-text="choices_heading"></h3>
+        <div id="choices"></div>
+
+        <label class="field">
+          <span data-text="note"></span>
+          <textarea id="note" rows="3" autocomplete="off"></textarea>
+        </label>
+
+        <h2 id="draft-heading" data-text="draft_heading"></h2>
+        <p id="missing" role="status"></p>
+        <div id="draft-area" hidden>
+          <p class="hint" data-text="draft_hint"></p>
+          <textarea id="draft" rows="18" autocomplete="off" aria-labelledby="draft-heading"></textarea>
+          <div class="buttons">
+            <button id="copy" type="button" data-text="copy"></button>
+            <button id="save-draft" type="button" data-text="save_draft"></button>
+          </div>
+          <p id="copy-status" role="status"></p>
+        </div>
+        <div class="buttons">
+          <button id="next-student" type="button" data-text="next_student"></button>
+        </div>
+      </section>
+
+      <section id="rubric" aria-labelledby="rubric-heading">
+        <h2 id="rubric-heading" data-text="rubric_heading"></h2>
+        <div class="buttons">
+          <label class="button" for="open-file" data-text="open_rubric"></label>
+          <input id="open-file" class="visually-hidden" type="file" accept=".json,application/json">
+          <button id="save-rubric" type="button" data-text="save_rubric"></button>
+        </div>
+        <label class="field">
+          <span data-text="rubric_title"></span>
+          <input id="rubric-title" type="text" autocomplete="off">
+        </label>
+        <label class="field">
+          <span data-text="opening"></span>
+          <input id="opening" type="text" autocomplete="off" aria-describedby="opening-hint">
+        </label>
+        <p id="opening-hint" class="hint" data-text="opening_hint"></p>
+        <label class="field">
+          <span data-text="closing"></span>
+          <input id="closing" type="text" autocomplete="off">
+        </label>
+        <label class="check">
+          <input id="show-points" type="checkbox">
+          <span data-text="show_points"></span>
+        </label>
+        <div id="criteria"></div>
+        <div class="buttons">
+          <button id="add-criterion" type="button" data-text="add_criterion"></button>
+        </div>
+      </section>
+    </div>
+  </main>
+  <noscript><p>This page needs JavaScript and WebAssembly.</p></noscript>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

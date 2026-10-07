@@ -1,0 +1,108 @@
+{
+  "title": "Sample rubric: project report",
+  "opening": "Hello {name}, here is my feedback on your project report.",
+  "closing": "Come and see me if you want to talk any of this through.",
+  "show_points": true,
+  "criteria": [
+    {
+      "name": "Research question",
+      "levels": [
+        {
+          "label": "Beginning",
+          "points": 1,
+          "comment": "State the question your report answers in one sentence near the start."
+        },
+        {
+          "label": "Developing",
+          "points": 2,
+          "comment": "Your question is there, but it is broad; narrow it so one report can answer it."
+        },
+        {
+          "label": "Proficient",
+          "points": 3,
+          "comment": "Your question is clear and focused enough to answer in the space you had."
+        },
+        {
+          "label": "Excellent",
+          "points": 4,
+          "comment": "Your question is sharp and well chosen, and every section serves it."
+        }
+      ]
+    },
+    {
+      "name": "Evidence and sources",
+      "levels": [
+        {
+          "label": "Beginning",
+          "points": 1,
+          "comment": "Support your claims with sources, and say where each one comes from."
+        },
+        {
+          "label": "Developing",
+          "points": 2,
+          "comment": "You use some sources; check that each claim you rely on has one."
+        },
+        {
+          "label": "Proficient",
+          "points": 3,
+          "comment": "Your claims are supported by suitable sources, cited consistently."
+        },
+        {
+          "label": "Excellent",
+          "points": 4,
+          "comment": "You weigh your sources against each other and explain why each can be trusted."
+        }
+      ]
+    },
+    {
+      "name": "Structure",
+      "levels": [
+        {
+          "label": "Beginning",
+          "points": 1,
+          "comment": "Group related points into sections so the reader can follow your argument."
+        },
+        {
+          "label": "Developing",
+          "points": 2,
+          "comment": "The sections are there; add sentences that link one to the next."
+        },
+        {
+          "label": "Proficient",
+          "points": 3,
+          "comment": "The report is well organised and easy to follow."
+        },
+        {
+          "label": "Excellent",
+          "points": 4,
+          "comment": "The structure carries the argument: each section builds on the one before."
+        }
+      ]
+    },
+    {
+      "name": "Writing",
+      "levels": [
+        {
+          "label": "Beginning",
+          "points": 1,
+          "comment": "Read your report aloud to find sentences that are hard to follow."
+        },
+        {
+          "label": "Developing",
+          "points": 2,
+          "comment": "Most sentences are clear; proofread for spelling and punctuation."
+        },
+        {
+          "label": "Proficient",
+          "points": 3,
+          "comment": "Your writing is clear and mostly free of errors."
+        },
+        {
+          "label": "Excellent",
+          "points": 4,
+          "comment": "Your writing is precise and easy to read throughout."
+        }
+      ]
+    }
+  ]
+}
