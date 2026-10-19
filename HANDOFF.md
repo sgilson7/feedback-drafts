@@ -4,6 +4,10 @@ Stage 9, written by the agent. `C5 Consolidate in your own words`.
 
 A fresh session starts from this file, not from memory.
 
+## 19 October 2026: T1, licence
+
+`TRIAGE.md` T1: an MIT `LICENSE` and a README line, published under the grant recorded in `BRIEF.md` (Autonomy). No code changed; the WebAssembly module was rebuilt with the current toolchain (notebook row 21). `./scripts/check.sh` on the T1 tree: BUILDER CHECK PASSED (78 core tests: 52 + 11 + 13 + 2; 180 browser-check PASS lines, 0 FAIL, in Chromium, Firefox and WebKit). Deployed by a normal push to `gh-pages` (row 22).
+
 ## What changed
 
 The template's placeholder became the feedback-drafts tool described in `BRIEF.md`.

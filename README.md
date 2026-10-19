@@ -59,3 +59,7 @@ The output in `dist/` is a set of static files. It can be served by any static h
 | `scripts/` | build, check, serve, import audit, mutation audit |
 
 The project follows the Builder template: `BUILDER-SPEC.md` holds its rules, `PLAN.md` the decisions and their reasons, `SECOND-ORDER.md` the notebook kept while building, and `HANDOFF.md` the state at handoff.
+
+## Licence
+
+MIT. See `LICENSE`.

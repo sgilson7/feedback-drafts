@@ -53,6 +53,8 @@ A one-page static tool for a teacher writing individual feedback on student proj
 
 The agent may plan, build, test and commit without waiting; the plan is approved in advance. It must stop and say so before adding a network request, a third-party script or service, a model, browser storage, or any way for student information to leave the device. It may never push or deploy.
 
+Publish grant, 2026-10-19, in the person's words: "ok execute all of the changes you recommend to increase feasabilitiy, i approve make deploy in all builder made repos, and make deploy in the website, keep track of all changes made in the design log here" This lifts "It may never push or deploy" for T1 (`TRIAGE.md`) only: push the commit, publish `dist/` to gh-pages, and run the browser check against the live address. Everything else above still stands.
+
 ## Allowed core dependencies
 
 `serde`, `serde_json` (reference default). No others.
